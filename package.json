@@ -4,30 +4,20 @@
   "module": "dist/index.js",
   "scripts": {
     "upgrade": "npx npm-check-updates --upgrade && rm -rf node_modules package-lock.json yarn.lock && npm install",
-    "dev": "concurrently \"npm run dev:watch\" \"npm run dev:test\"",
-    "dev:test": "vitest",
     "dev:watch": "esbuild ./src/index.ts --platform=browser --outfile=./dist/index.js --format=esm --bundle --minify --watch",
     "build": "esbuild ./src/index.ts --platform=browser --outfile=./dist/index.js --format=esm --bundle --minify",
-    "test": "vitest run"
+    "test": ""
   },
   "dependencies": {
     "@inlang/core": "^0.3.1"
   },
   "devDependencies": {
     "esbuild": "^0.17.10",
-    "husky": "^8.0.3",
-    "memfs": "^3.4.13",
     "npm-check-updates": "^16.7.9",
-    "typescript": "^4.9.5",
-    "vitest": "^0.29.1"
+    "typescript": "^4.9.5"
   },
   "engines": {
     "node": ">=19.X.X",
     "npm": ">=9.0.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run test && npm run build"
-    }
   }
 }

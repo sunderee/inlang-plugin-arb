@@ -1,5 +1,5 @@
-import type { Config, EnvironmentFunctions } from "@inlang/core/config";
 import type * as ast from "@inlang/core/ast";
+import type { Config, EnvironmentFunctions } from "@inlang/core/config";
 
 /**
  * The plugin configuration.

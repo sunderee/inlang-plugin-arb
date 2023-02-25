@@ -1,14 +1,14 @@
 // @ts-ignore
-import { defineConfig } from "../example/inlang.config.js";
-import { describe, it, expect } from "vitest";
-import nodeFs from "node:fs";
-import { fs as memfs } from "memfs";
 import {
-  initialize$import,
   Config,
   EnvironmentFunctions,
+  initialize$import,
 } from "@inlang/core/config";
 import { query } from "@inlang/core/query";
+import { fs as memfs } from "memfs";
+import nodeFs from "node:fs";
+import { describe, expect, it } from "vitest";
+import { defineConfig } from "../example/inlang.config.js";
 
 const env = await initializeTestEnvironment();
 const config: Config = await defineConfig(env);

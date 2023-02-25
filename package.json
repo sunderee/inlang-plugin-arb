@@ -1,11 +1,12 @@
 {
-  "name": "inlang-plugin-x-select-a-name-x",
+  "name": "inlang-plugin-arb",
   "type": "module",
   "module": "dist/index.js",
   "engines": {
     "node": "^18"
   },
   "scripts": {
+    "upgrade": "npx npm-check-updates --upgrade && rm -rf node_modules package-lock.json yarn.lock && npm install",
     "dev": "concurrently \"npm run dev:watch\" \"npm run dev:test\"",
     "dev:test": "vitest",
     "dev:watch": "DEV=true node ./build.js",
@@ -22,6 +23,7 @@
     "esbuild": "^0.16.11",
     "husky": "^8.0.3",
     "memfs": "^3.4.12",
+    "npm-check-updates": "^16.7.9",
     "typescript": "^4.9.4",
     "vitest": "^0.26.2"
   }

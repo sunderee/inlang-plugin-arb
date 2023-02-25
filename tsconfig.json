@@ -10,12 +10,12 @@
     "target": "ES2020",
     // enable strict type checking (recommended, reduces bugs)
     "strict": true,
-    // to improve bundling, types should explicitly importes as types
+    // to improve bundling, types should explicitly imported as types
     "importsNotUsedAsValues": "error",
     // esmoduleinterop is oftentimes required
     "esModuleInterop": true,
     "checkJs": true,
     "allowJs": true,
-    "outDir": "dist",
+    "outDir": "dist"
   }
 }

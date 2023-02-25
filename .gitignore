@@ -1,5 +1,11 @@
-# ignore all files in the node_modules directory
-node_modules/
+# IDEs
+.idea
+.vscode
 
-# ignore mac .DS_Store files
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# macOS
 .DS_Store

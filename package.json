@@ -2,29 +2,32 @@
   "name": "inlang-plugin-arb",
   "type": "module",
   "module": "dist/index.js",
-  "engines": {
-    "node": "^18"
-  },
   "scripts": {
     "upgrade": "npx npm-check-updates --upgrade && rm -rf node_modules package-lock.json yarn.lock && npm install",
     "dev": "concurrently \"npm run dev:watch\" \"npm run dev:test\"",
     "dev:test": "vitest",
-    "dev:watch": "DEV=true node ./build.js",
-    "build": "node ./build.js",
-    "test": "vitest run",
-    "prepare": "husky install"
+    "dev:watch": "esbuild ./src/index.ts --platform=browser --outfile=./dist/index.js --format=esm --bundle --minify --watch",
+    "build": "esbuild ./src/index.ts --platform=browser --outfile=./dist/index.js --format=esm --bundle --minify",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@inlang/core": "^0.3.0"
+    "@inlang/core": "^0.3.1"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
-    "concurrently": "^7.6.0",
-    "esbuild": "^0.16.11",
+    "esbuild": "^0.17.10",
     "husky": "^8.0.3",
-    "memfs": "^3.4.12",
+    "memfs": "^3.4.13",
     "npm-check-updates": "^16.7.9",
-    "typescript": "^4.9.4",
-    "vitest": "^0.26.2"
+    "typescript": "^4.9.5",
+    "vitest": "^0.29.1"
+  },
+  "engines": {
+    "node": ">=19.X.X",
+    "npm": ">=9.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run test && npm run build"
+    }
   }
 }

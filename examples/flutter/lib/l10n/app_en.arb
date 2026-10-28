@@ -1,0 +1,39 @@
+{
+  "@@locale": "en",
+  "@@context": "Flutter ARB conformance example",
+  "pluralCategories": "{count, plural, zero {Zero} one {One} two {Two} few {Few} many {Many} other {Other}}",
+  "@pluralCategories": { "placeholders": { "count": { "type": "num" } } },
+  "hashNested": "{count, plural, =0 {Zero} =2 {Two} other {{gender, select, x {# literal} other {# other}}}}",
+  "@hashNested": { "placeholders": { "count": { "type": "num" }, "gender": { "type": "String" } } },
+  "hello": "Hello {name}!",
+  "@hello": {
+    "description": "A personalized greeting",
+    "placeholders": { "name": { "type": "String", "example": "Ada" } }
+  },
+  "cart": "Cart: {count, plural, =0 {Empty} =1 {Exactly one} one {One item} other {{count} things}}!",
+  "@cart": { "placeholders": { "count": { "type": "num" } } },
+  "nested": "{gender, select, male {{count, plural, one {He has one item} other {He has {count} items}}} other {{count, plural, one {They have one item} other {They have {count} items}}}}",
+  "@nested": { "placeholders": { "gender": { "type": "String" }, "count": { "type": "num" } } },
+  "literalHash": "{count, plural, one {# item} other {# items}}",
+  "@literalHash": { "placeholders": { "count": { "type": "int" } } },
+  "escaped": "Hello! '{Isn''t}' this a wonderful day?",
+  "adjacentQuotes": "'{''}'",
+  "money": "Total: {amount}",
+  "@money": {
+    "placeholders": {
+      "amount": {
+        "type": "double",
+        "format": "compactCurrency",
+        "optionalParameters": { "decimalDigits": 2, "name": "USD", "symbol": "$" }
+      }
+    }
+  },
+  "date": "Date: {when}",
+  "@date": { "placeholders": { "when": { "type": "DateTime", "format": "yMMMd" } } },
+  "customDate": "{when}",
+  "@customDate": { "placeholders": { "when": { "type": "DateTime", "format": "yyyy-MM-dd", "isCustomDateFormat": true } } },
+  "inlineDate": "{when, date, ::yMMMMd}",
+  "@inlineDate": { "placeholders": { "when": { "type": "DateTime" } } },
+  "selectNumeric": "{kind, select, 0 {Zero} other {Other}}",
+  "@selectNumeric": { "placeholders": { "kind": { "type": "String" } } }
+}

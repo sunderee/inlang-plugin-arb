@@ -1,0 +1,10 @@
+{
+  "$schema": "https://inlang.com/schema/project-settings",
+  "baseLocale": "en",
+  "locales": ["en", "de"],
+  "modules": ["./plugins/arb.js"],
+  "plugin.inlang.arb": {
+    "pathPattern": "./lib/l10n/app_{locale}.arb",
+    "useEscaping": true
+  }
+}

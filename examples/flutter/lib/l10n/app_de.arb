@@ -1,0 +1,16 @@
+{
+  "@@locale": "de",
+  "pluralCategories": "{count, plural, zero {Null} one {Eins} two {Zwei} few {Wenige} many {Viele} other {Andere}}",
+  "hashNested": "{count, plural, =0 {Null} =2 {Zwei} other {{gender, select, x {# wörtlich} other {# andere}}}}",
+  "hello": "Hallo {name}!",
+  "cart": "Warenkorb: {count, plural, =0 {Leer} =1 {Genau eins} one {Ein Artikel} other {{count} Artikel}}!",
+  "nested": "{gender, select, male {{count, plural, one {Er hat einen Artikel} other {Er hat {count} Artikel}}} other {{count, plural, one {Sie haben einen Artikel} other {Sie haben {count} Artikel}}}}",
+  "literalHash": "{count, plural, one {# Artikel} other {# Artikel}}",
+  "escaped": "Hallo! '{Ist}' das ein schöner Tag?",
+  "adjacentQuotes": "'{''}'",
+  "money": "Summe: {amount}",
+  "date": "Datum: {when}",
+  "customDate": "{when}",
+  "inlineDate": "{when, date, ::yMMMMd}",
+  "selectNumeric": "{kind, select, 0 {Null} other {Andere}}"
+}

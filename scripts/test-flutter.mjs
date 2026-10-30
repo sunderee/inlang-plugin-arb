@@ -69,6 +69,15 @@ try {
       ),
     })),
   );
+  for (const file of files) {
+    const document = JSON.parse(new TextDecoder().decode(file.content));
+    document.pluralInputCollision = "{n, plural, one {One} other {Many}} {nPlural}";
+    if (file.locale === settings.baseLocale)
+      document["@pluralInputCollision"] = {
+        placeholders: { n: { type: "num" }, nPlural: { type: "String" } },
+      };
+    file.content = new TextEncoder().encode(JSON.stringify(document));
+  }
   const outputs = await exportCatalogs(files, settings);
   await mkdir(path.join(directory, "lib/l10n"), { recursive: true });
   await mkdir(path.join(directory, "test"));
@@ -105,6 +114,10 @@ Future<void> main() async {
     expect(en.cart(0), 'Cart: Empty!');
     expect(en.cart(1), 'Cart: One item!');
     expect(en.cart(3), 'Cart: 3 things!');
+  });
+  test('plural locals cannot steal an input placeholder', () {
+    expect(en.pluralInputCollision(2, 'Label'), 'Many Label');
+    expect(en.pluralInputCollision(1, 'Label'), 'One Label');
   });
   test('nested selects and plurals', () {
     expect(en.nested('male', 1), 'He has one item');

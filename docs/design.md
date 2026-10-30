@@ -10,7 +10,7 @@ The ICU mapping uses the public `parseMessage` and `serializeMessage` APIs from 
 
 Flutter's `Intl.pluralLogic` first checks numeric 0, 1 and 2 when the corresponding case exists, then uses locale plural rules. Its generator maps both `=1` and `one` to the same argument, with the later entry taking precedence. The adapter therefore expands each present zero/one/two case to an exact numeric branch and a category branch in inlang's model. This makes the model's meaning explicit. Those patterns must remain consistent: general inlang data can express exact/category distinctions that Flutter cannot express. Export reports those distinctions as errors.
 
-Nested and adjacent conditions can expand into several variants. Expansion is estimated and bounded before the ICU mapper runs. This intentionally conservative bound may reject a large message that a later optimization could reduce; increase `maxVariants` for trusted catalogs when necessary. Deeply nested messages are rejected separately.
+Nested and adjacent conditions can expand into several variants. Flutter conversion bounds expansion at every nesting level before constructing each choice's ICU text, including duplicated exact numeric branches after last-case-wins alias normalization. Case counts add and adjacent choice counts multiply, matching the local ICU inspector's bound before the mapper runs. This intentionally conservative bound may reject a large message that a later optimization could reduce; increase `maxVariants` for trusted catalogs when necessary. Deeply nested messages are rejected separately.
 
 ## Metadata carriers
 

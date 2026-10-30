@@ -8,11 +8,12 @@
     "lint": "biome lint --error-on-warnings .",
     "format": "biome format --write .",
     "format:check": "biome format .",
+    "check:biome": "biome check --error-on-warnings .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:flutter": "node scripts/test-flutter.mjs",
-    "check": "npm run typecheck && biome check --error-on-warnings . && npm run test:coverage && npm run build && npm run test:package",
+    "check": "npm run typecheck && npm run check:biome && npm run test:coverage && npm run build && npm run test:package",
     "prepack": "npm run build",
     "test:package": "node scripts/test-package.mjs",
     "deps:upgrade": "node scripts/upgrade-dependencies.mjs"

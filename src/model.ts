@@ -30,9 +30,12 @@ export function namespaceLocals(
     ...ref,
     name: names.get(ref.name) ?? ref.name,
   });
-  const expression = (expr: Expression): Expression => ({
+  // ICU1 locals can share input names; pattern references must still address those inputs.
+  const patternReference = (ref: VariableReference): VariableReference =>
+    inputs.has(ref.name) ? ref : reference(ref);
+  const expression = (expr: Expression, rewriteReference = reference): Expression => ({
     ...expr,
-    arg: expr.arg.type === "variable-reference" ? reference(expr.arg) : expr.arg,
+    arg: expr.arg.type === "variable-reference" ? rewriteReference(expr.arg) : expr.arg,
     ...(expr.annotation === undefined
       ? {}
       : {
@@ -41,7 +44,9 @@ export function namespaceLocals(
             options: expr.annotation.options.map((option) => ({
               ...option,
               value:
-                option.value.type === "variable-reference" ? reference(option.value) : option.value,
+                option.value.type === "variable-reference"
+                  ? rewriteReference(option.value)
+                  : option.value,
             })),
           },
         }),
@@ -64,7 +69,7 @@ export function namespaceLocals(
         key: names.get(match.key) ?? match.key,
       })),
       pattern: variant.pattern?.map((part) =>
-        part.type === "expression" ? expression(part) : part,
+        part.type === "expression" ? expression(part, patternReference) : part,
       ),
     })),
   };

@@ -1,6 +1,6 @@
 # Dependency decisions
 
-The plugin has two direct runtime dependencies. Both are pinned to the versions used by the integration tests.
+The plugin has two direct runtime dependencies. Direct dependencies track the latest published release (`pkg@latest` via `npm run deps:upgrade`). The lockfile records the exact resolved tree that tests and CI install.
 
 | Dependency            | Purpose                                                                                              |
 | --------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -16,9 +16,9 @@ The initial implementation also imported these packages directly:
 | `jsonc-parser`            | JSON diagnostics, duplicate keys and depth checks             | Native `JSON.parse` plus an iterative regular-expression token scan for duplicate decoded keys, finite numbers and container depth |
 | `@types/moo`              | Declarations required by the external parser's types          | No longer needed by the public/local types                                                                                         |
 
-The SDK and ICU plugin themselves still depend on TypeBox and an ICU parser. Removing our direct imports does not remove those transitive dependencies. The single TypeBox version override remains because its older declarations fail modern strict TypeScript checks; library checking stays enabled. Package-loader tests verify that the local schema works with the SDK's own TypeBox validator.
+The SDK and ICU plugin themselves still depend on TypeBox (`^0.31.17`) and an ICU parser. Removing our direct imports does not remove those transitive dependencies. TypeBox 0.31 declarations fail modern TypeScript with `skipLibCheck: false` (`Excessive stack depth` in `UnionToTuple`). The `@sinclair/typebox` override therefore stays on the latest 0.34 release that typechecks, currently `0.34.52`. Library checking stays enabled. Package-loader tests verify that the local schema works with the SDK's own TypeBox validator. `npm run deps:upgrade` refreshes that override to the latest published TypeBox after installing `@latest` for every direct dependency; it never empties `dependencies` or `devDependencies`.
 
-ESLint, its JS configuration package, `typescript-eslint`, and Prettier were replaced by `@biomejs/biome`. Biome enables recommended project/type/test lint rules, formatting and import organization. `useLiteralKeys` is disabled because it conflicts with TypeScript's `noPropertyAccessFromIndexSignature`; the stricter compiler option remains enabled. Markdown and YAML are outside the formatter's supported-file checks. See [Biome configuration](https://biomejs.dev/reference/configuration/).
+ESLint, its JS configuration package, `typescript-eslint`, and Prettier were replaced by `@biomejs/biome`. Biome enables recommended project/type/test lint rules, formatting and import organization. `useLiteralKeys` is disabled because it conflicts with TypeScript's `noPropertyAccessFromIndexSignature`; the stricter compiler option remains enabled. Biome also formats Markdown and YAML. See [Biome configuration](https://biomejs.dev/reference/configuration/).
 
 The remaining development dependencies each support a distinct verification/build requirement:
 

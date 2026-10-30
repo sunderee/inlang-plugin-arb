@@ -20,8 +20,15 @@
     "noUncheckedSideEffectImports": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": false,
+    "allowJs": true,
+    "maxNodeModuleJsDepth": 0,
     "types": ["node"],
     "noEmit": true
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "scripts/upgrade-dependencies.mjs",
+    "vitest.config.ts"
+  ]
 }

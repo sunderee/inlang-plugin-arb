@@ -3,6 +3,8 @@ import { ArbError } from "./error.js";
 import { type IcuPart, parseIcu } from "./icu.js";
 import type { ResolvedSettings } from "./settings.js";
 
+type ConvertedMessage = { source: string; variants: number };
+
 const categories = new Set(["zero", "one", "two", "few", "many", "other"]);
 const pluralAliases: Readonly<Record<string, string | undefined>> = {
   "=0": "zero",
@@ -33,6 +35,10 @@ export function flutterToIcu(
   const fail = (message: string): never => {
     throw new ArbError(`${message} at offset ${position}`);
   };
+  const bounded = (count: number): void => {
+    if (count > config.maxVariants)
+      fail(`Message expansion exceeds maxVariants (${config.maxVariants})`);
+  };
   const whitespace = (): void => {
     match(whitespacePattern);
   };
@@ -47,10 +53,11 @@ export function flutterToIcu(
     if (result === null) return fail("Expected a placeholder identifier");
     return result[0];
   };
-  const message = (nested: boolean, inPlural: boolean, depth: number): string => {
+  const message = (nested: boolean, inPlural: boolean, depth: number): ConvertedMessage => {
     if (depth > 32) fail("Message nesting exceeds 32 levels");
     let result = "";
     let text = "";
+    let variants = 1;
     const flush = (): void => {
       result += escapeIcuText(text, inPlural);
       text = "";
@@ -121,7 +128,7 @@ export function flutterToIcu(
         fail(
           `Flutter does not support inline ${JSON.stringify(kind)}; use placeholder metadata for number/date formatting`,
         );
-      const cases = new Map<string, string>();
+      const cases = new Map<string, ConvertedMessage>();
       for (;;) {
         whitespace();
         if (kind === "plural" && match(offsetPrefix, false) !== null)
@@ -154,6 +161,15 @@ export function flutterToIcu(
         cases.set(alias ?? key, body);
       }
       if (!cases.has("other")) fail("A select/plural must contain an other case");
+      let choiceVariants = 0;
+      for (const [key, body] of cases) {
+        // zero/one/two bodies also appear in an exact numeric branch.
+        const copies = kind === "plural" && ["zero", "one", "two"].includes(key) ? 2 : 1;
+        choiceVariants += copies * body.variants;
+        bounded(choiceVariants);
+      }
+      variants *= choiceVariants;
+      bounded(variants);
       let exacts = "";
       if (kind === "plural") {
         // Intl.pluralLogic tests numeric 0/1/2 before applying CLDR rules.
@@ -163,15 +179,15 @@ export function flutterToIcu(
           ["two", "=2"],
         ] as const) {
           const body = cases.get(category);
-          if (body !== undefined) exacts += ` ${exact} {${body}}`;
+          if (body !== undefined) exacts += ` ${exact} {${body.source}}`;
         }
       }
-      result += `{${arg}, ${kind},${exacts}${[...cases].map(([key, body]) => ` ${key} {${body}}`).join("")}}`;
+      result += `{${arg}, ${kind},${exacts}${[...cases].map(([key, body]) => ` ${key} {${body.source}}`).join("")}}`;
     }
     flush();
-    return result;
+    return { source: result, variants };
   };
-  return message(false, false, 0);
+  return message(false, false, 0).source;
 }
 
 /** Guard the expansion before the ICU mapper constructs a Cartesian variant table. */

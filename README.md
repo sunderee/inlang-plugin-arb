@@ -89,6 +89,7 @@ Existing number/date formatting metadata remains authoritative. Newly created Fl
 npm run typecheck       # All strict TypeScript checks; dependency declarations also checked
 npm run lint            # Biome linting, including project/type/test rules
 npm run format:check    # Biome formatting checks
+npm run check:biome     # Full Biome gate (lint + format + assist) used by npm run check and CI
 npm test                # Unit, property, semantic, formatting and real SDK integration tests
 npm run test:coverage   # Enforces coverage thresholds; writes coverage/index.html and lcov.info
 npm run build           # Bundled ESM, source map, declarations and settings schema

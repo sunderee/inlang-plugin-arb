@@ -16,6 +16,6 @@
     "/changelog": "./CHANGELOG.md"
   },
   "keywords": ["flutter", "dart", "arb", "localization", "plugin"],
-  "module": "https://cdn.jsdelivr.net/npm/inlang-plugin-arb@1.0.0/dist/index.js",
+  "module": "https://cdn.jsdelivr.net/npm/inlang-plugin-arb@latest/dist/index.js",
   "icon": "./assets/icon.svg"
 }

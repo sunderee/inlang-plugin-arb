@@ -61,6 +61,11 @@ export function moduleUrl(pkg) {
   return `https://cdn.jsdelivr.net/npm/${pkg.name}@${pkg.version}/dist/index.js`;
 }
 
+/** @param {{name: string}} pkg */
+export function latestModuleUrl(pkg) {
+  return `https://cdn.jsdelivr.net/npm/${pkg.name}@latest/dist/index.js`;
+}
+
 /** Focused repository contract, deliberately stricter than the marketplace schema.
  * @param {unknown} manifest @returns {string[]}
  */
@@ -99,11 +104,11 @@ export function validateManifest(manifest) {
   }
   if (
     typeof manifest["module"] !== "string" ||
-    !/^https:\/\/cdn\.jsdelivr\.net\/npm\/(?:@[a-z0-9._-]+\/)?[a-z0-9._-]+@\d+\.\d+\.\d+(?:-[\da-zA-Z.-]+)?\/dist\/index\.js$/.test(
+    !/^https:\/\/cdn\.jsdelivr\.net\/npm\/(?:@[a-z0-9._-]+\/)?[a-z0-9._-]+@latest\/dist\/index\.js$/.test(
       manifest["module"],
     )
   ) {
-    errors.push("module must be an exact versioned HTTPS jsDelivr npm dist/index.js URL");
+    errors.push("module must be a jsDelivr npm @latest dist/index.js URL");
   }
   const pages = manifest["pages"];
   if (
@@ -163,8 +168,8 @@ export function validateListing(listing) {
   ) {
     errors.push("package name and exact version are required");
   } else {
-    const url = moduleUrl({ name, version });
-    if (manifest["module"] !== url) errors.push("module must match package name and exact version");
+    const url = latestModuleUrl({ name });
+    if (manifest["module"] !== url) errors.push("module must match package name and @latest");
     if (!readme.includes(url)) errors.push("README must contain the module URL");
     const settingsExamples = [...readme.matchAll(/```json\s*\n([\s\S]*?)\n```/g)];
     const hasInstallExample = settingsExamples.some((match) => {

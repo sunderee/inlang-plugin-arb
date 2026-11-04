@@ -6,14 +6,14 @@ Requires inlang SDK **4.0.4 or later**. Development supports Node.js **22.13+, 2
 
 ## Install
 
-The installation URL for `inlang-plugin-arb@1.0.0` is `https://cdn.jsdelivr.net/npm/inlang-plugin-arb@1.0.0/dist/index.js`. Configure `project.inlang/settings.json` with this versioned URL:
+The installation URL is `https://cdn.jsdelivr.net/npm/inlang-plugin-arb@latest/dist/index.js`. Configure `project.inlang/settings.json` with that marketplace `@latest` URL:
 
 ```json
 {
   "$schema": "https://inlang.com/schema/project-settings",
   "baseLocale": "en",
   "locales": ["en", "de", "zh", "zh-Hant-TW"],
-  "modules": ["https://cdn.jsdelivr.net/npm/inlang-plugin-arb@1.0.0/dist/index.js"],
+  "modules": ["https://cdn.jsdelivr.net/npm/inlang-plugin-arb@latest/dist/index.js"],
   "plugin.inlang.arb": {
     "pathPattern": "./lib/l10n/app_{locale}.arb",
     "useEscaping": true
@@ -38,19 +38,15 @@ For local development, run `npm ci` and `npm run check`, copy `dist/index.js` to
 
 ## Publishing and marketplace registration
 
-The [marketplace manifest](marketplace-manifest.json) lives at the repository root. Publication and the inlang.com listing are pending. The default branch is `master`.
+The [marketplace manifest](marketplace-manifest.json) lives at the repository root. The default branch is `master`. `inlang-plugin-arb@1.0.0` is on npm. The inlang.com listing is proposed in [opral/inlang#4521](https://github.com/opral/inlang/pull/4521), which points at:
 
-After this change merges to `master`:
+```text
+https://raw.githubusercontent.com/sunderee/inlang-plugin-arb/refs/heads/master/marketplace-manifest.json
+```
 
-1. Configure the npm package's [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) for GitHub owner `sunderee`, repository `inlang-plugin-arb`, workflow filename `publish.yml`, allowing `npm publish`. The tag workflow uses OIDC and provenance; no `NPM_TOKEN` is required. npm requires the package to exist before configuring trust; if the name is new, a maintainer must first bootstrap package ownership on npm so these settings are available.
-2. Create and push the version tag `v1.0.0`. The [.github/workflows/publish.yml](.github/workflows/publish.yml) workflow checks that the tag matches `package.json` and belongs to `master`, then runs every Node quality gate before `npm publish --access public --provenance`. It uses Node 24 and npm 11.21.0 (trusted publishing requires npm 11.5.1 or later).
-3. Verify the versioned jsDelivr module URL, then open a separate PR against `opral/inlang`, adding an unused unique key under `"m"` in `packages/marketplace-registry/registry.json` with this manifest URL:
+The listing `module` field must stay the jsDelivr `@latest` URL. The inlang registry build rejects pinned versions such as `@1.0.0` and would abort the entire marketplace.
 
-   ```text
-   https://raw.githubusercontent.com/sunderee/inlang-plugin-arb/refs/heads/master/marketplace-manifest.json
-   ```
-
-4. After the registry PR merges and the site deploys, verify the listing at [inlang.com/c/plugins](https://inlang.com/c/plugins), its README/changelog pages, icon, and install URL. Until then, the manifest is listing preparation only.
+Later releases: tag `v*` on `master`. [.github/workflows/publish.yml](.github/workflows/publish.yml) checks that the tag matches `package.json` and belongs to `master`, then runs every Node quality gate before `npm publish --access public --provenance`. GitHub Actions authenticates with npm Trusted Publishing (OIDC); no `NPM_TOKEN` is required. After a registry PR merges and the site deploys, verify the listing at [inlang.com/c/plugins](https://inlang.com/c/plugins).
 
 ## Supported features
 
@@ -114,7 +110,7 @@ npm audit --audit-level=high # Fail on high or critical dependency vulnerabiliti
 npm run deps:upgrade    # Install @latest for every direct dependency; refresh the TypeBox override
 ```
 
-`npm run test:package` builds through the prepack hook, inspects the actual tarball and its listing assets, and imports/saves ARB with both the built and extracted plugin through the SDK module loader. It also tries the versioned jsDelivr URL through that loader if published; a 404 or network failure skips only the live CDN check. Marketplace tests always enforce local contracts, including rejection of unknown manifest keys, unsafe relative paths and unversioned modules. Only the live official-schema assertion can skip when offline.
+`npm run test:package` builds through the prepack hook, inspects the actual tarball and its listing assets, and imports/saves ARB with both the built and extracted plugin through the SDK module loader. It also tries the versioned jsDelivr URL through that loader if published; a 404 or network failure skips only the live CDN check. Marketplace tests always enforce local contracts, including rejection of unknown manifest keys, unsafe relative paths and pinned module URLs. The listing `module` field must be the jsDelivr `@latest` URL because the inlang registry build rejects any other module tag. Only the live official-schema assertion can skip when offline.
 
 The `Verify` workflow runs every Node gate as an explicit step on Node 22, 24 and 26, including the marketplace contract, package dry run and high-severity audit. Its separate Flutter job compiles and exercises generated Dart code.
 

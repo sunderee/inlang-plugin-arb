@@ -4,21 +4,16 @@ Imports Flutter Application Resource Bundle (`.arb`) files into inlang and expor
 
 Requires inlang SDK **4.0.4 or later**. Development supports Node.js **22.13+, 24, or 26+**. The built plugin is a self-contained browser-compatible ES module; Flutter apps need no JavaScript runtime.
 
-## Build and install locally
+## Install
 
-```sh
-npm ci
-npm run check
-```
-
-Copy `dist/index.js` to `plugins/arb.js` beside `project.inlang` in your Flutter repository. Configure `project.inlang/settings.json`:
+The installation URL for the planned `inlang-plugin-arb@0.1.0` release is `https://cdn.jsdelivr.net/npm/inlang-plugin-arb@0.1.0/dist/index.js`. It becomes available after the npm release workflow publishes. Configure `project.inlang/settings.json` with this versioned URL:
 
 ```json
 {
   "$schema": "https://inlang.com/schema/project-settings",
   "baseLocale": "en",
   "locales": ["en", "de", "zh", "zh-Hant-TW"],
-  "modules": ["./plugins/arb.js"],
+  "modules": ["https://cdn.jsdelivr.net/npm/inlang-plugin-arb@0.1.0/dist/index.js"],
   "plugin.inlang.arb": {
     "pathPattern": "./lib/l10n/app_{locale}.arb",
     "useEscaping": true
@@ -37,7 +32,25 @@ output-localization-file: app_localizations.dart
 use-escaping: true
 ```
 
-Then use your inlang editor to translate and save, and run `flutter gen-l10n` as usual. [A complete example](examples/flutter) includes English and German catalogs. No package has been published; use the local bundle or host that file at a versioned HTTPS URL for shared projects.
+Then use your inlang editor to translate and save, and run `flutter gen-l10n` as usual. [A complete example](examples/flutter) includes English and German catalogs.
+
+For local development, run `npm ci` and `npm run check`, copy `dist/index.js` to `plugins/arb.js` beside `project.inlang`, and replace the `modules` array above with `["./plugins/arb.js"]`.
+
+## Publishing and marketplace registration
+
+The [marketplace manifest](marketplace-manifest.json) lives at the repository root. Publication and the inlang.com listing are pending. The default branch is `master`.
+
+After this change merges to `master`:
+
+1. Configure the npm package's [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) for GitHub owner `sunderee`, repository `inlang-plugin-arb`, workflow filename `publish.yml`. The tag workflow uses OIDC and provenance; no `NPM_TOKEN` is required.
+2. Create and push the version tag `v0.1.0`. The `.github/workflows/publish.yml` workflow runs the quality gates before `npm publish --access public --provenance`.
+3. Verify the versioned jsDelivr module URL, then open a separate PR against `opral/inlang`, adding an unused unique key under `"m"` in `packages/marketplace-registry/registry.json` with this manifest URL:
+
+   ```text
+   https://raw.githubusercontent.com/sunderee/inlang-plugin-arb/refs/heads/master/marketplace-manifest.json
+   ```
+
+4. After the registry PR merges and the site deploys, verify the listing at [inlang.com/c/plugins](https://inlang.com/c/plugins), its README/changelog pages, icon, and install URL. Until then, the manifest is listing preparation only.
 
 ## Supported features
 

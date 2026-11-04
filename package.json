@@ -2,6 +2,19 @@
   "name": "inlang-plugin-arb",
   "version": "0.1.0",
   "description": "Lossless Flutter ARB import and export for inlang",
+  "author": "Peter Aleksander Bizjak",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunderee/inlang-plugin-arb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sunderee/inlang-plugin-arb/issues"
+  },
+  "homepage": "https://github.com/sunderee/inlang-plugin-arb#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "node scripts/build.mjs && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
@@ -22,6 +35,7 @@
     "inlang",
     "plugin",
     "flutter",
+    "dart",
     "arb",
     "localization",
     "icu"
@@ -58,7 +72,10 @@
     "README.md",
     "LICENSE",
     "docs",
-    "examples"
+    "examples",
+    "marketplace-manifest.json",
+    "assets",
+    "CHANGELOG.md"
   ],
   "overrides": {
     "@sinclair/typebox": "0.34.52"

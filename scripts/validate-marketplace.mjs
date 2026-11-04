@@ -275,6 +275,16 @@ export function validatePackedFiles(files) {
   return errors;
 }
 
+/** The published module must be self-contained in browser hosts.
+ * @param {string} bundle @returns {string[]}
+ */
+export function validateBrowserBundle(bundle) {
+  const imports = [
+    ...bundle.matchAll(/\b(?:from\s*|import\s*(?:\(\s*)?|(?:__)?require\s*\(\s*)["']([^"']+)["']/g),
+  ];
+  return imports.map((match) => `external import in browser bundle: ${match[1]}`);
+}
+
 /** @param {string} root @returns {Listing} */
 export function readListing(root) {
   const read = (/** @type {string} */ file) => readFileSync(path.join(root, file), "utf8");

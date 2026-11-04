@@ -7,6 +7,7 @@ import {
   registryManifestUrl,
   repositoryUrl,
   schemaUrl,
+  validateBrowserBundle,
   validateListing,
   validateManifest,
   validatePackedFiles,
@@ -425,4 +426,23 @@ test("live schema still recognizes this plugin shape", async (context) => {
     ]),
   );
   for (const field of required) expect(manifest).toHaveProperty(String(field));
+});
+
+describe("browser bundle contract", () => {
+  test("accepts a self-contained ESM", () => {
+    expect(validateBrowserBundle("export default { key: 'plugin.inlang.arb' };")).toEqual([]);
+  });
+  test.each([
+    'import fs from "node:fs";',
+    'export { readFile } from "node:fs/promises";',
+    'import "node:crypto";',
+    'const fs = require("fs");',
+    "const fs = require('fs/promises');",
+    'const p = import("node:path");',
+    'const fs = __require("fs");',
+    'import arb from "external-package";',
+  ])("rejects external dependency %s", (source) => {
+    expect(validateBrowserBundle(source)).toHaveLength(1);
+    expect(validateBrowserBundle(source)[0]).toContain("external import in browser bundle");
+  });
 });

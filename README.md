@@ -6,14 +6,14 @@ Requires inlang SDK **4.0.4 or later**. Development supports Node.js **22.13+, 2
 
 ## Install
 
-The installation URL for the planned `inlang-plugin-arb@0.1.0` release is `https://cdn.jsdelivr.net/npm/inlang-plugin-arb@0.1.0/dist/index.js`. It becomes available after the npm release workflow publishes. Configure `project.inlang/settings.json` with this versioned URL:
+The installation URL for `inlang-plugin-arb@1.0.0` is `https://cdn.jsdelivr.net/npm/inlang-plugin-arb@1.0.0/dist/index.js`. Configure `project.inlang/settings.json` with this versioned URL:
 
 ```json
 {
   "$schema": "https://inlang.com/schema/project-settings",
   "baseLocale": "en",
   "locales": ["en", "de", "zh", "zh-Hant-TW"],
-  "modules": ["https://cdn.jsdelivr.net/npm/inlang-plugin-arb@0.1.0/dist/index.js"],
+  "modules": ["https://cdn.jsdelivr.net/npm/inlang-plugin-arb@1.0.0/dist/index.js"],
   "plugin.inlang.arb": {
     "pathPattern": "./lib/l10n/app_{locale}.arb",
     "useEscaping": true
@@ -43,7 +43,7 @@ The [marketplace manifest](marketplace-manifest.json) lives at the repository ro
 After this change merges to `master`:
 
 1. Configure the npm package's [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) for GitHub owner `sunderee`, repository `inlang-plugin-arb`, workflow filename `publish.yml`, allowing `npm publish`. The tag workflow uses OIDC and provenance; no `NPM_TOKEN` is required. npm requires the package to exist before configuring trust; if the name is new, a maintainer must first bootstrap package ownership on npm so these settings are available.
-2. Create and push the version tag `v0.1.0`. The [.github/workflows/publish.yml](.github/workflows/publish.yml) workflow checks that the tag matches `package.json` and belongs to `master`, then runs every Node quality gate before `npm publish --access public --provenance`. It uses Node 24 and npm 11.21.0 (trusted publishing requires npm 11.5.1 or later).
+2. Create and push the version tag `v1.0.0`. The [.github/workflows/publish.yml](.github/workflows/publish.yml) workflow checks that the tag matches `package.json` and belongs to `master`, then runs every Node quality gate before `npm publish --access public --provenance`. It uses Node 24 and npm 11.21.0 (trusted publishing requires npm 11.5.1 or later).
 3. Verify the versioned jsDelivr module URL, then open a separate PR against `opral/inlang`, adding an unused unique key under `"m"` in `packages/marketplace-registry/registry.json` with this manifest URL:
 
    ```text

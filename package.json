@@ -1,6 +1,6 @@
 {
   "name": "inlang-plugin-arb",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Lossless Flutter ARB import and export for inlang",
   "author": "Peter Aleksander Bizjak",
   "repository": {

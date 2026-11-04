@@ -78,7 +78,7 @@ describe("committed marketplace and release files", () => {
       types: "./dist/index.d.ts",
       import: "./dist/index.js",
     });
-    expect(listing.changelog).toContain("## 0.1.0");
+    expect(listing.changelog).toContain(`## ${pkg.version}`);
     for (const content of [listing.readme, listing.changelog]) {
       expect(content).toContain(registryManifestUrl);
       expect(content).toMatch(/default branch[\s\S]{0,40}`master`/);
@@ -359,7 +359,7 @@ describe("hostile cross-file fixtures", () => {
       "master default branch",
     );
     expectListingError(
-      { changelog: listing.changelog.replace("## 0.1.0", "## Unreleased") },
+      { changelog: listing.changelog.replace(`## ${pkg.version}`, "## Unreleased") },
       "CHANGELOG must mention",
     );
     expectListingError(

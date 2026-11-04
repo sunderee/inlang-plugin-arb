@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 import {
@@ -95,6 +96,75 @@ describe("committed marketplace and release files", () => {
         encoding: "utf8",
       }),
     ).toContain("contracts verified");
+  });
+});
+
+describe("release workflow contracts", () => {
+  const publish = readFileSync(
+    new URL("../.github/workflows/publish.yml", import.meta.url),
+    "utf8",
+  );
+  const ci = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
+  const publishSteps = publish
+    .split(/^ {6}- /m)
+    .slice(1)
+    .map((step) => step.trimEnd());
+  const publishIndex = publishSteps.indexOf("run: npm publish --access public --provenance");
+
+  test("publishes only v* tags with OIDC and without persisted credentials", () => {
+    expect(publish).toMatch(/^on:\n {2}push:\n {4}tags:\n {6}- "v\*"\n\n(?=\S)/m);
+    expect(publish).toContain("permissions:\n  contents: read\n  id-token: write\n");
+    expect(publish).toContain("          persist-credentials: false\n");
+    for (const workflow of [publish, ci]) {
+      if (/^ {2}pull_request(?:_target)?:/m.test(workflow)) {
+        expect(workflow).not.toMatch(/npm publish\b/);
+      }
+    }
+  });
+
+  test("verifies the version and fetches master before checking ancestry in the same step", () => {
+    const verification = publishSteps.find((step) =>
+      step.startsWith("name: Verify release tag and merged history\n        run: |\n"),
+    );
+    expect(verification).toBeDefined();
+    expect(verification).toContain('import pkg from "./package.json" with { type: "json" }');
+    expect(verification).toMatch(
+      /assert\.equal\(process\.env\.GITHUB_REF_NAME, `v\$\{pkg\.version\}`\);/,
+    );
+    expect(verification).toContain(
+      "          git fetch --no-tags origin master:refs/remotes/origin/master\n" +
+        "          git merge-base --is-ancestor HEAD origin/master",
+    );
+    expect(publishIndex).toBeGreaterThan(publishSteps.indexOf(verification ?? ""));
+  });
+
+  test("runs the marketplace, package, coverage and audit gates before publishing", () => {
+    expect(publishIndex).toBeGreaterThan(0);
+    for (const command of [
+      "npm run check:marketplace",
+      "npm run test:package",
+      "npm run test:coverage",
+      "npm audit --audit-level=high",
+    ]) {
+      expect(publishSteps.slice(0, publishIndex)).toContain(`run: ${command}`);
+    }
+  });
+
+  test("keeps every explicit CI validation step", () => {
+    for (const command of [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run format:check",
+      "npm run check:biome",
+      "npm run test:coverage",
+      "npm run build",
+      "npm run test:package",
+      "npm run check:marketplace",
+      "npm pack --dry-run",
+      "npm audit --audit-level=high",
+    ]) {
+      expect(ci).toContain(`      - run: ${command}\n`);
+    }
   });
 });
 

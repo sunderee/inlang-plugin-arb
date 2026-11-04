@@ -42,8 +42,8 @@ The [marketplace manifest](marketplace-manifest.json) lives at the repository ro
 
 After this change merges to `master`:
 
-1. Configure the npm package's [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) for GitHub owner `sunderee`, repository `inlang-plugin-arb`, workflow filename `publish.yml`. The tag workflow uses OIDC and provenance; no `NPM_TOKEN` is required.
-2. Create and push the version tag `v0.1.0`. The `.github/workflows/publish.yml` workflow runs the quality gates before `npm publish --access public --provenance`.
+1. Configure the npm package's [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) for GitHub owner `sunderee`, repository `inlang-plugin-arb`, workflow filename `publish.yml`, allowing `npm publish`. The tag workflow uses OIDC and provenance; no `NPM_TOKEN` is required. npm requires the package to exist before configuring trust; if the name is new, a maintainer must first bootstrap package ownership on npm so these settings are available.
+2. Create and push the version tag `v0.1.0`. The [.github/workflows/publish.yml](.github/workflows/publish.yml) workflow checks that the tag matches `package.json` and belongs to `master`, then runs every Node quality gate before `npm publish --access public --provenance`. It uses Node 24 and npm 11.21.0 (trusted publishing requires npm 11.5.1 or later).
 3. Verify the versioned jsDelivr module URL, then open a separate PR against `opral/inlang`, adding an unused unique key under `"m"` in `packages/marketplace-registry/registry.json` with this manifest URL:
 
    ```text
@@ -106,11 +106,17 @@ npm run check:biome     # Full Biome gate (lint + format + assist) used by npm r
 npm test                # Unit, property, semantic, formatting and real SDK integration tests
 npm run test:coverage   # Enforces coverage thresholds; writes coverage/index.html and lcov.info
 npm run build           # Bundled ESM, source map, declarations and settings schema
-npm run test:package    # Load the built file through the SDK's real module loader
+npm run test:package    # Build/pack, inspect extracted files, load built and packed modules via SDK
+npm run check:marketplace # Validate listing, release metadata, docs and asset contracts
 npm run test:flutter    # Requires Flutter; compiles exported ARB and runs generated Dart tests
 npm pack --dry-run      # Inspect the distributable package
+npm audit --audit-level=high # Fail on high or critical dependency vulnerabilities
 npm run deps:upgrade    # Install @latest for every direct dependency; refresh the TypeBox override
 ```
+
+`npm run test:package` builds through the prepack hook, inspects the actual tarball and its listing assets, and imports/saves ARB with both the built and extracted plugin through the SDK module loader. It also tries the versioned jsDelivr URL through that loader if published; a 404 or network failure skips only the live CDN check. Marketplace tests always enforce local contracts, including rejection of unknown manifest keys, unsafe relative paths and unversioned modules. Only the live official-schema assertion can skip when offline.
+
+The `Verify` workflow runs every Node gate as an explicit step on Node 22, 24 and 26, including the marketplace contract, package dry run and high-severity audit. Its separate Flutter job compiles and exercises generated Dart code.
 
 `npm run test:flutter` builds a temporary Flutter test project using the **built** plugin and example catalogs. Run `npm run build` first. It checks actual generated getters/methods for interpolation, plural alias precedence, nested choices, literal `#`, apostrophes, number/currency formatting, custom dates and date skeletons. It then edits real SDK database rows, creates messages with inferred `num`/`DateTime` types, deletes and renames resources, saves with existing files, and compiles the resulting ARB. It also verifies a new BCP 47 filename and both escaping/relaxed modes. It removes the temporary project on completion. Set `FLUTTER_BIN` to use a specific Flutter executable.
 

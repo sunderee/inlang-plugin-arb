@@ -26,10 +26,11 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:flutter": "node scripts/test-flutter.mjs",
-    "check": "npm run typecheck && npm run check:biome && npm run test:coverage && npm run build && npm run test:package",
+    "check": "npm run typecheck && npm run check:biome && npm run test:coverage && npm run build && npm run test:package && npm run check:marketplace",
     "prepack": "npm run build",
     "test:package": "node scripts/test-package.mjs",
-    "deps:upgrade": "node scripts/upgrade-dependencies.mjs"
+    "deps:upgrade": "node scripts/upgrade-dependencies.mjs",
+    "check:marketplace": "node scripts/validate-marketplace.mjs"
   },
   "keywords": [
     "inlang",

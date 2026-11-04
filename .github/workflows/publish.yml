@@ -1,0 +1,47 @@
+name: Publish
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - name: Install npm with trusted publishing support
+        run: npm install --global npm@11.21.0
+      - name: Verify release tag and merged history
+        run: |
+          node --input-type=module -e 'import assert from "node:assert/strict"; import pkg from "./package.json" with { type: "json" }; assert.equal(process.env.GITHUB_REF_NAME, `v${pkg.version}`);'
+          git fetch --no-tags origin master:refs/remotes/origin/master
+          git merge-base --is-ancestor HEAD origin/master
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run check:biome
+      - run: npm run test:coverage
+      - run: npm run build
+      - run: npm run test:package
+      - run: npm run check:marketplace
+      - run: npm pack --dry-run
+      - run: npm audit --audit-level=high
+      - run: npm publish --access public --provenance

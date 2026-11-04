@@ -1,0 +1,21 @@
+{
+  "$schema": "https://inlang.com/schema/marketplace-manifest",
+  "id": "plugin.inlang.arb",
+  "displayName": {
+    "en": "Flutter ARB"
+  },
+  "description": {
+    "en": "Losslessly import and export Flutter ARB translations with inlang, preserving resource attributes, placeholder metadata, and file formatting."
+  },
+  "publisherName": "sunderee",
+  "publisherLink": "https://github.com/sunderee",
+  "license": "MIT",
+  "repository": "https://github.com/sunderee/inlang-plugin-arb",
+  "pages": {
+    "/": "./README.md",
+    "/changelog": "./CHANGELOG.md"
+  },
+  "keywords": ["flutter", "dart", "arb", "localization", "plugin"],
+  "module": "https://cdn.jsdelivr.net/npm/inlang-plugin-arb@1.0.0/dist/index.js",
+  "icon": "./assets/icon.svg"
+}

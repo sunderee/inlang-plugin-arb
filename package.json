@@ -1,7 +1,20 @@
 {
   "name": "inlang-plugin-arb",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Lossless Flutter ARB import and export for inlang",
+  "author": "Peter Aleksander Bizjak",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunderee/inlang-plugin-arb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sunderee/inlang-plugin-arb/issues"
+  },
+  "homepage": "https://github.com/sunderee/inlang-plugin-arb#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "node scripts/build.mjs && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
@@ -13,15 +26,17 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:flutter": "node scripts/test-flutter.mjs",
-    "check": "npm run typecheck && npm run check:biome && npm run test:coverage && npm run build && npm run test:package",
+    "check": "npm run typecheck && npm run check:biome && npm run test:coverage && npm run build && npm run test:package && npm run check:marketplace",
     "prepack": "npm run build",
     "test:package": "node scripts/test-package.mjs",
-    "deps:upgrade": "node scripts/upgrade-dependencies.mjs"
+    "deps:upgrade": "node scripts/upgrade-dependencies.mjs",
+    "check:marketplace": "node scripts/validate-marketplace.mjs"
   },
   "keywords": [
     "inlang",
     "plugin",
     "flutter",
+    "dart",
     "arb",
     "localization",
     "icu"
@@ -58,7 +73,10 @@
     "README.md",
     "LICENSE",
     "docs",
-    "examples"
+    "examples",
+    "marketplace-manifest.json",
+    "assets",
+    "CHANGELOG.md"
   ],
   "overrides": {
     "@sinclair/typebox": "0.34.52"

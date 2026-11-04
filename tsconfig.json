@@ -29,6 +29,7 @@
     "src/**/*.ts",
     "tests/**/*.ts",
     "scripts/upgrade-dependencies.mjs",
+    "scripts/validate-marketplace.mjs",
     "vitest.config.ts"
   ]
 }

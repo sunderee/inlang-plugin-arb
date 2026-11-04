@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 import {
+  latestModuleUrl,
   moduleUrl,
   readListing,
   registryManifestUrl,
@@ -20,7 +21,8 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const listing = readListing(root);
 const manifest = listing.manifest as Record<string, unknown>;
 const pkg = listing.packageJson as Record<string, unknown> & { name: string; version: string };
-const url = moduleUrl(pkg);
+const url = latestModuleUrl(pkg);
+const versionedUrl = moduleUrl(pkg);
 const packed = [
   "package.json",
   "dist/index.js",
@@ -62,10 +64,11 @@ describe("committed marketplace and release files", () => {
       expect.arrayContaining(["flutter", "dart", "arb", "localization", "plugin"]),
     );
     expect(manifest["module"]).toBe(url);
+    expect(manifest["module"]).not.toBe(versionedUrl);
     const parsed = new URL(url);
     expect(parsed.protocol).toBe("https:");
     expect(parsed.hostname).toBe("cdn.jsdelivr.net");
-    expect(parsed.pathname).toBe(`/npm/${pkg.name}@${pkg.version}/dist/index.js`);
+    expect(parsed.pathname).toBe(`/npm/${pkg.name}@latest/dist/index.js`);
     expect(listing.readme).toContain(url);
     expect(listing.readme).toContain("SDK **4.0.4 or later**");
     expect(pkg["repository"]).toEqual({ type: "git", url: `git+${repositoryUrl}.git` });
@@ -237,8 +240,9 @@ describe("hostile manifest fixtures", () => {
     url.replace("https://", "http://"),
     "./dist/index.js",
     "https://raw.githubusercontent.com/sunderee/inlang-plugin-arb/master/dist/index.js",
-    url.replace(`@${pkg.version}`, "@latest"),
-    url.replace(`@${pkg.version}`, "@^0.1.0"),
+    versionedUrl,
+    url.replace("@latest", `@${pkg.version}`),
+    url.replace("@latest", "@^0.1.0"),
     url.replace("index.js", "index.mjs"),
     url.replace("dist/index.js", "src/index.ts"),
     url.replace("/dist/", "/"),
@@ -267,12 +271,10 @@ describe("hostile cross-file fixtures", () => {
     );
     for (const module of [
       url.replace(pkg.name, "wrong-package"),
-      url.replace(`@${pkg.version}`, "@9.9.9"),
+      url.replace("@latest", "@9.9.9"),
+      versionedUrl,
     ]) {
-      expectListingError(
-        { manifest: changedManifest("module", module) },
-        "module must match package name and exact version",
-      );
+      expectListingError({ manifest: changedManifest("module", module) }, "module must");
     }
     expectListingError({ packageJson: null }, "package.json must be an object");
     expectListingError({ manifest: null }, "manifest must be an object");
